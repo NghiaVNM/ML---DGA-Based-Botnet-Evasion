@@ -27,26 +27,32 @@ from sklearn.model_selection import train_test_split
 from tensorflow.keras.utils import to_categorical
 
 # Train
-train = pd.read_csv('../dataset/dgcorrect/binary-train.txt', header=None)
+train = pd.read_csv('../dataset/dgcorrect/trainlabel-binary.csv', header=None, sep=';')
+train = train.iloc[:,0:1]
+print(train)
 
-trainlabels = pd.read_csv('../dataset/dgcorrect/binary-label.txt', header=None)
-trainlabel = trainlabels.iloc[:,0:1]
+trainlabels = pd.read_csv('../dataset/dgcorrect/trainlabel-binary.csv', header=None, sep=';')
+trainlabel = trainlabels.iloc[:,1:2]
+print(trainlabel)
 
 # Test 1
 test = pd.read_csv('../dataset/dgcorrect/test1.txt', header=None)
+print(test)
 
 testlabels = pd.read_csv('../dataset/dgcorrect/test1label.txt', header=None)
 testlabel = testlabels.iloc[:,0:1]
+print(testlabel)
 
 # Test 2
 test1 = pd.read_csv('../dataset/dgcorrect/test2.txt', header=None)
+print(test1)
 
 testlabels1 = pd.read_csv('../dataset/dgcorrect/test2label.txt', header=None)
 testlabel1 = testlabels1.iloc[:,0:1]
+print(testlabel1)
 
 X = train.values.tolist()
 X = list(itertools.chain(*X))
-
 
 T = test.values.tolist()
 T = list(itertools.chain(*T))
@@ -54,14 +60,14 @@ T = list(itertools.chain(*T))
 T1 = test1.values.tolist()
 T1 = list(itertools.chain(*T1))
 
+all_data = X + T + T1
 # Generate a dictionary of valid characters
-valid_chars = {x:idx+1 for idx, x in enumerate(set(''.join(X)))}
+valid_chars = {x:idx+1 for idx, x in enumerate(set(''.join(all_data)))}
 
 max_features = len(valid_chars) + 1
 
 maxlen = np.max([len(x) for x in X])
 print(maxlen)
-
 
 # Convert characters to int and pad
 X1 = [[valid_chars[y] for y in x] for x in X]
@@ -94,7 +100,7 @@ model.add(Activation('sigmoid'))
 model.compile(loss='binary_crossentropy', optimizer='adam',metrics=['accuracy'])
 checkpointer = callbacks.ModelCheckpoint(filepath="logs/lstm/checkpoint-{epoch:02d}.hdf5", verbose=1, save_best_only=True, monitor='loss')
 csv_logger = CSVLogger('logs/lstm/training_set_lstmanalysis.csv',separator=',', append=False)
-model.fit(X_train, y_train, batch_size=32, epochs=100,shuffle=True,callbacks=[checkpointer,csv_logger])
+model.fit(X_train, y_train, batch_size=32, epochs=10,shuffle=True,callbacks=[checkpointer,csv_logger])
 model.save("logs/lstm/coomplemodel.hdf5")
 score, acc = model.evaluate(X_test, y_test, batch_size=32)
 print('Test score:', score)
