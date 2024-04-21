@@ -112,4 +112,5 @@ score, acc = model.evaluate(X_test, y_test, batch_size=32)
 print('Test score:', score)
 print('Test accuracy:', acc)
 
-
+# Test score: 24.182201385498047
+# Test accuracy: 0.616463303565979
