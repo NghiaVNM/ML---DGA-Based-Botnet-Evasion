@@ -1,0 +1,11 @@
+CNN
+Test score: 0.05183684080839157
+Test accuracy: 0.9801909327507019
+
+GRU
+
+LSTM
+
+RNN
+
+CNN-LSTM
