@@ -7,5 +7,14 @@ GRU
 LSTM
 
 RNN
-
+Test score: 0.051515016704797745
+Test accuracy: 0.9783951044082642
+accuracy
+0.217
+racall
+0.683
+precision
+0.038
+f1score
+0.071
 CNN-LSTM

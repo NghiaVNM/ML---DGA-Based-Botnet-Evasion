@@ -27,11 +27,12 @@ from sklearn.model_selection import train_test_split
 from tensorflow.keras.utils import to_categorical
 
 # Train
-train = pd.read_csv('../dataset/dgcorrect/binary-train.txt', header=None)
+train = pd.read_csv('../dataset/dgcorrect/trainlabel-binary.csv', header=None, sep=';')
+train = train.iloc[:,0:1]
 print(train)
 
-trainlabels = pd.read_csv('../dataset/dgcorrect/binary-label.txt', header=None)
-trainlabel = trainlabels.iloc[:,0:1]
+trainlabels = pd.read_csv('../dataset/dgcorrect/trainlabel-binary.csv', header=None, sep=';')
+trainlabel = trainlabels.iloc[:,1:2]
 print(trainlabel)
 
 # Test 1
@@ -50,14 +51,8 @@ testlabels1 = pd.read_csv('../dataset/dgcorrect/test2label.txt', header=None)
 testlabel1 = testlabels1.iloc[:,0:1]
 print(testlabel1)
 
-
-train = pd.read_csv('dgcorrect/train.txt', header=None)
-test = pd.read_csv('dgcorrect/test1.txt', header=None)
-test1 = pd.read_csv('dgcorrect/test2.txt', header=None)
-
 X = train.values.tolist()
 X = list(itertools.chain(*X))
-
 
 T = test.values.tolist()
 T = list(itertools.chain(*T))
@@ -65,8 +60,13 @@ T = list(itertools.chain(*T))
 T1 = test1.values.tolist()
 T1 = list(itertools.chain(*T1))
 
+# # Generate a dictionary of valid characters
+# valid_chars = {x:idx+1 for idx, x in enumerate(set(''.join(X)))}
+
+# Combine all datasets into one list
+all_data = X + T + T1
 # Generate a dictionary of valid characters
-valid_chars = {x:idx+1 for idx, x in enumerate(set(''.join(X)))}
+valid_chars = {x:idx+1 for idx, x in enumerate(set(''.join(all_data)))}
 
 max_features = len(valid_chars) + 1
 
@@ -103,9 +103,36 @@ model.add(Dense(1))
 model.add(Activation('sigmoid'))
 
 # try using different optimizers and different optimizer configs
-model.load_weights("logs/rnn/checkpoint-01.hdf5")
+model.load_weights("logs/rnn/coomplemodel.hdf5")
 
-y_pred = model.predict_classes(X_test)
+def preprocess_url(url, maxlen, valid_chars):
+    url_int = [valid_chars[y] for y in url]
+    url_int_pad = sequence.pad_sequences([url_int], maxlen=maxlen)
+    return url_int_pad
+
+url_to_check1 = "vkxynazg.top"
+url_to_check2 = "r1---sn-nv47lne6.googlevideo.com"
+
+url_to_check_int1 = preprocess_url(url_to_check1, maxlen, valid_chars)
+url_to_check_int2 = preprocess_url(url_to_check2, maxlen, valid_chars)
+
+prediction1 = (model.predict(url_to_check_int1) > 0.5).astype("int32")
+prediction2 = (model.predict(url_to_check_int2) > 0.5).astype("int32")
+print(prediction1)
+print(prediction2)
+if prediction1 == 1:
+    print("The URL '{}' is negative (benign).".format(url_to_check1))
+else:
+    print("The URL '{}' is positive (malicious).".format(url_to_check1))
+    
+
+if prediction2 == 1:
+    print("The URL '{}' is negative (benign).".format(url_to_check2))
+else:
+    print("The URL '{}' is positive (malicious).".format(url_to_check2))
+
+y_pred = (model.predict(X_test) > 0.5).astype("int32")
+print(y_pred)
 np.savetxt("binary-test1.txt", y_pred, fmt="%01d")
 accuracy = accuracy_score(y_test, y_pred)
 recall = recall_score(y_test, y_pred , average="binary")
@@ -124,6 +151,16 @@ print("%.3f" %precision)
 print("f1score")
 print("%.3f" %f1)
 
+# Test score: 0.051515016704797745
+# Test accuracy: 0.9783951044082642
+# accuracy
+# 0.217
+# racall
+# 0.683
+# precision
+# 0.038
+# f1score
+# 0.071
 '''
 cm = metrics.confusion_matrix(y_test, y_pred)
 print("==============================================")

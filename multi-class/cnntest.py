@@ -1,15 +1,15 @@
 from __future__ import print_function
-from sklearn.cross_validation import train_test_split
+# from sklearn.cross_validation import train_test_split
 import pandas as pd
 import numpy as np
 np.random.seed(1337)  # for reproducibility
 from keras.preprocessing import sequence
-from keras.utils import np_utils
+# from keras.utils import np_utils
 from keras.models import Sequential
 from keras.layers import Dense, Dropout, Activation, Embedding
 from keras.layers import LSTM, SimpleRNN, GRU
 from keras.datasets import imdb
-from keras.utils.np_utils import to_categorical
+# from keras.utils.np_utils import to_categorical
 from sklearn.metrics import (precision_score, recall_score,f1_score, accuracy_score,mean_squared_error,mean_absolute_error)
 from sklearn import metrics
 from sklearn.preprocessing import Normalizer
@@ -23,28 +23,38 @@ from keras.callbacks import CSVLogger
 from keras.callbacks import ModelCheckpoint, EarlyStopping, ReduceLROnPlateau, CSVLogger
 from keras import callbacks
 from keras.layers import Convolution1D, GlobalMaxPooling1D
-from keras.utils import np_utils
+# from keras.utils import np_utils
 
-trainlabels = pd.read_csv('dgcorrect/trainlabel.csv', header=None)
+from sklearn.model_selection import train_test_split
+from tensorflow.keras.utils import to_categorical
 
-trainlabel = trainlabels.iloc[:,0:1]
+# Train
+train = pd.read_csv('../dataset/dgcorrect-multi/trainlabel-multi.csv', header=None)
+train = train.iloc[:,0:1]
+print(train)
 
-testlabels = pd.read_csv('dgcorrect/test1label.csv', header=None)
+trainlabels = pd.read_csv('../dataset/dgcorrect-multi/trainlabel-multi.csv', header=None)
+trainlabel = trainlabels.iloc[:,1:2]
+print(trainlabel)
 
+# Test 1
+test = pd.read_csv('../dataset/dgcorrect-multi/test1.txt', header=None)
+print(test)
+
+testlabels = pd.read_csv('../dataset/dgcorrect-multi/test1-label.txt', header=None)
 testlabel = testlabels.iloc[:,0:1]
+print(testlabel)
 
-testlabels1 = pd.read_csv('dgcorrect/test2label.csv', header=None)
+# Test 2
+test1 = pd.read_csv('../dataset/dgcorrect-multi/testing-2.txt', header=None)
+print(test1)
 
+testlabels1 = pd.read_csv('../dataset/dgcorrect-multi/testing-2-label.txt', header=None)
 testlabel1 = testlabels1.iloc[:,0:1]
-
-
-train = pd.read_csv('dgcorrect/train.txt', header=None)
-test = pd.read_csv('dgcorrect/test1.txt', header=None)
-test1 = pd.read_csv('dgcorrect/test2.txt', header=None)
+print(testlabel1)
 
 X = train.values.tolist()
 X = list(itertools.chain(*X))
-
 
 T = test.values.tolist()
 T = list(itertools.chain(*T))
@@ -52,8 +62,13 @@ T = list(itertools.chain(*T))
 T1 = test1.values.tolist()
 T1 = list(itertools.chain(*T1))
 
+# # Generate a dictionary of valid characters
+# valid_chars = {x:idx+1 for idx, x in enumerate(set(''.join(X)))}
+
+# Combine all datasets into one list
+all_data = X + T + T1
 # Generate a dictionary of valid characters
-valid_chars = {x:idx+1 for idx, x in enumerate(set(''.join(X)))}
+valid_chars = {x:idx+1 for idx, x in enumerate(set(''.join(all_data)))}
 
 max_features = len(valid_chars) + 1
 
@@ -90,11 +105,11 @@ embedding_vecor_length = 128
 
 model = Sequential()
 model.add(Embedding(max_features, embedding_vecor_length, input_length=maxlen))
-model.add(Convolution1D(nb_filter=nb_filter,
-                        filter_length=filter_length,
-                        border_mode='valid',
+model.add(Convolution1D(filters=nb_filter,
+                        kernel_size=filter_length,
+                        padding='valid',
                         activation='relu',
-                        subsample_length=1))
+                        strides=1))
 model.add(GlobalMaxPooling1D())
 model.add(Dense(hidden_dims))
 model.add(Dropout(0.2))
@@ -115,7 +130,7 @@ print('Test accuracy:', acc)
 # try using different optimizers and different optimizer configs
 model.load_weights("logs/cnn/coomplemodel.hdf5")
 
-y_pred = model.predict_classes(X_test1)
+y_pred = (model.predict(X_test) > 0.5).astype("int32")
 accuracy = accuracy_score(y_test1n, y_pred)
 recall = recall_score(y_test1n, y_pred , average="weighted")
 precision = precision_score(y_test1n, y_pred , average="weighted")
