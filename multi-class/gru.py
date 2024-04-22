@@ -93,6 +93,7 @@ model.add(Dense(21))
 model.add(Activation('softmax'))
 
 model.compile(loss='categorical_crossentropy', optimizer='adam',metrics=['accuracy'])
+
 checkpointer = callbacks.ModelCheckpoint(filepath="logs/gru/checkpoint-{epoch:02d}.hdf5", verbose=1, save_best_only=True, monitor='loss')
 csv_logger = CSVLogger('logs/gru/training_set_gruanalysis.csv',separator=',', append=False)
 model.fit(X_train, y_train, batch_size=32, nb_epoch=1000, shuffle=True,callbacks=[checkpointer,csv_logger])
