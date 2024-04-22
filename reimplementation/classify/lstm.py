@@ -64,15 +64,15 @@ test1label = pd.read_csv('../dataset/classify/test1label.txt', header=None)
 test2 = pd.read_csv('../dataset/classify/test2.txt', header=None)
 test2label = pd.read_csv('../dataset/classify/test2label.txt', header=None)
 
-train = train.append(test1)
-train = train.append(test2)
+train = train._append(test1)
+train = train._append(test2)
 
 trainlabel.columns = ['label']
 test1label.columns = ['label']
 test2label.columns = ['label']
 
-trainlabel = trainlabel.append(test1label)
-trainlabel = trainlabel.append(test2label)
+trainlabel = trainlabel._append(test1label)
+trainlabel = trainlabel._append(test2label)
 
 X = train.values.tolist()
 X = list(itertools.chain(*X))
@@ -112,6 +112,8 @@ model.add(Activation('softmax'))
 # Compile the model
 model.compile(loss='categorical_crossentropy', optimizer='adam', metrics=['accuracy'])
 
+X_train, X_test, y_train, y_test = train_test_split(X_train, y_train, test_size=0.2, random_state=42)
+
 # Define callbacks for model
 csv_logger = CSVLogger('./logs/lstm/training.log')
 custom_checkpoint = CustomModelCheckpoint('./logs/lstm/checkpoint-{epoch:02d}.h5', monitor='val_loss', mode='min', save_best_only=False)
@@ -120,7 +122,10 @@ early_stopping = EarlyStopping(monitor='val_loss', patience=5, verbose=1)
 reduce_lr = ReduceLROnPlateau(monitor='val_loss', factor=0.2, patience=3, min_lr=0.001)
 
 # Train the model
-history = model.fit(X_train, y_train, epochs=10, batch_size=32, callbacks=[csv_logger, custom_checkpoint, final_checkpoint, early_stopping])
+history = model.fit(X_train, y_train, 
+                    validation_data=(X_test, y_test), 
+                    epochs=10, batch_size=32, 
+                    callbacks=[csv_logger, custom_checkpoint, final_checkpoint, early_stopping])
 
 # Plot training accuracy
 train_acc = history.history['accuracy']

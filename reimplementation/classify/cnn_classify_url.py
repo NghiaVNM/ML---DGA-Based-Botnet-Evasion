@@ -10,7 +10,7 @@ valid_chars = {'w': 1, 'f': 2, '6': 3, 's': 4, 'v': 5, '3': 6, 'x': 7, 'p': 8, '
 max_features = 40
 maxlen = 91
 
-model = load_model('./logs/cnn/checkpoint-00.h5')
+model = load_model('./logs/cnn/final_cnn.h5')
 
 while True:
     # Prepare data for new domain

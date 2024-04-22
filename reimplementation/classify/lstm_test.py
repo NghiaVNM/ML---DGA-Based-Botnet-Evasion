@@ -1,34 +1,20 @@
 from __future__ import print_function
-from sklearn.cross_validation import train_test_split
 import pandas as pd
 import numpy as np
 np.random.seed(1337)  # for reproducibility
 from keras.preprocessing import sequence
-from keras.utils import np_utils
 from keras.models import Sequential
-from keras.layers import Dense, Dropout, Activation, Embedding
-from keras.layers import LSTM, SimpleRNN, GRU
-from keras.datasets import imdb
-from keras.utils.np_utils import to_categorical
-from sklearn.metrics import (auc, precision_score, recall_score,f1_score, accuracy_score,mean_squared_error,mean_absolute_error, roc_curve)
-from sklearn import metrics
+from keras.layers import Dense, Dropout, Embedding
+from keras.layers import Conv1D, MaxPooling1D, Flatten
 from sklearn.preprocessing import Normalizer
-import h5py
-from keras import callbacks
-from keras.callbacks import CSVLogger
-import keras
-import keras.preprocessing.text
+from tensorflow.keras.utils import to_categorical
 import itertools
-from keras.callbacks import CSVLogger
-from keras.callbacks import ModelCheckpoint, EarlyStopping, ReduceLROnPlateau, CSVLogger
-from keras import callbacks
-from keras.utils import np_utils
+import matplotlib.pyplot as plt
+from sklearn.metrics import accuracy_score, precision_score, recall_score, f1_score, roc_curve, auc, confusion_matrix
 from sklearn.metrics import roc_auc_score
 from sklearn.preprocessing import LabelBinarizer
-import matplotlib.pyplot as plt
 from keras.models import load_model
 from sklearn.model_selection import train_test_split
-import itertools
 
 # train
 train = pd.read_csv('../dataset/classify/trainlabel-multi.csv', header=None)
@@ -70,11 +56,15 @@ X_train = sequence.pad_sequences(X1, maxlen=maxlen)
 y_train = np.array(trainlabel)
 y_train = to_categorical(y_train)
 
+# Model parameters
 num_classes = 21
 
-model = load_model('./logs/gru/final_gru.h5')
+model = load_model('./logs/lstm/final_cnn.h5')
 
 X_train, X_test, y_train, y_test = train_test_split(X_train, y_train, test_size=0.2, random_state=42)
+
+from sklearn.metrics import roc_auc_score
+from sklearn.preprocessing import LabelBinarizer
 
 def plot_roc_curve(y_true, y_pred, filename):
     lb = LabelBinarizer()
@@ -113,7 +103,7 @@ f1 = f1_score(np.argmax(y_test, axis=1), y_pred_classes, average='weighted')
 auc_score = roc_auc_score(y_test, y_pred, multi_class='ovr')
 
 # Save the results to a .txt file
-with open('./logs/gru/test_results.txt', 'w') as f:
+with open('./logs/lstm/test_results.txt', 'w') as f:
     f.write(f'Accuracy: {accuracy}\n')
     f.write(f'Precision: {precision}\n')
     f.write(f'Recall: {recall}\n')
@@ -121,4 +111,4 @@ with open('./logs/gru/test_results.txt', 'w') as f:
     f.write(f'AUC: {auc_score}\n')
 
 # Plot and save the ROC curve
-plot_roc_curve(np.argmax(y_test, axis=1), y_pred_classes, './logs/gru/test_roc_curve.png')
+plot_roc_curve(np.argmax(y_test, axis=1), y_pred_classes, './logs/lstm/test_roc_curve.png')

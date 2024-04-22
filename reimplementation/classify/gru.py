@@ -112,6 +112,8 @@ model.add(Activation('softmax'))
 # Compile the model
 model.compile(loss='categorical_crossentropy', optimizer='adam', metrics=['accuracy'])
 
+X_train, X_test, y_train, y_test = train_test_split(X_train, y_train, test_size=0.2, random_state=42)
+
 # Define callbacks for model
 csv_logger = CSVLogger('./logs/gru/training.log')
 custom_checkpoint = CustomModelCheckpoint('./logs/gru/checkpoint-{epoch:02d}.h5', monitor='val_loss', mode='min', save_best_only=False)
@@ -120,7 +122,10 @@ early_stopping = EarlyStopping(monitor='val_loss', patience=5, verbose=1)
 reduce_lr = ReduceLROnPlateau(monitor='val_loss', factor=0.2, patience=3, min_lr=0.001)
 
 # Train the model
-history = model.fit(X_train, y_train, epochs=10, batch_size=32, callbacks=[csv_logger, custom_checkpoint, final_checkpoint, early_stopping])
+history = model.fit(X_train, y_train, 
+                    validation_data=(X_test, y_test), 
+                    epochs=10, batch_size=32, 
+                    callbacks=[csv_logger, custom_checkpoint, final_checkpoint, early_stopping])
 
 # Plot training accuracy
 train_acc = history.history['accuracy']
