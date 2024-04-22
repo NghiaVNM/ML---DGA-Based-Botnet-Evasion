@@ -23,7 +23,7 @@ from keras.callbacks import CSVLogger
 from keras.callbacks import ModelCheckpoint, EarlyStopping, ReduceLROnPlateau, CSVLogger
 from keras import callbacks
 from keras.layers import Convolution1D, GlobalMaxPooling1D
-
+from keras.models import load_model
 from sklearn.model_selection import train_test_split
 from tensorflow.keras.utils import to_categorical
 
