@@ -1,7 +1,5 @@
 from keras.preprocessing import sequence
 from keras.models import load_model
-from sklearn.preprocessing import Normalizer
-from tensorflow.keras.utils import to_categorical
 import numpy as np
 
 # Generate a dictionary of valid characters
