@@ -1,15 +1,15 @@
 from __future__ import print_function
-from sklearn.cross_validation import train_test_split
+# from sklearn.cross_validation import train_test_split
 import pandas as pd
 import numpy as np
 np.random.seed(1337)  # for reproducibility
 from keras.preprocessing import sequence
-from keras.utils import np_utils
+# from keras.utils import np_utils
 from keras.models import Sequential
 from keras.layers import Dense, Dropout, Activation, Embedding
 from keras.layers import LSTM, SimpleRNN, GRU
 from keras.datasets import imdb
-from keras.utils.np_utils import to_categorical
+# from keras.utils.np_utils import to_categorical
 from sklearn.metrics import (auc, precision_score, recall_score,f1_score, accuracy_score,mean_squared_error,mean_absolute_error, roc_curve)
 from sklearn import metrics
 from sklearn.preprocessing import Normalizer
@@ -22,13 +22,15 @@ import itertools
 from keras.callbacks import CSVLogger
 from keras.callbacks import ModelCheckpoint, EarlyStopping, ReduceLROnPlateau, CSVLogger
 from keras import callbacks
-from keras.utils import np_utils
+# from keras.utils import np_utils
 from sklearn.metrics import roc_auc_score
 from sklearn.preprocessing import LabelBinarizer
 import matplotlib.pyplot as plt
 from keras.models import load_model
 from sklearn.model_selection import train_test_split
 import itertools
+from tensorflow.keras.utils import to_categorical
+
 
 # train
 train = pd.read_csv('../dataset/classify/trainlabel-multi.csv', header=None)

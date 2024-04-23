@@ -59,7 +59,7 @@ y_train = to_categorical(y_train)
 # Model parameters
 num_classes = 21
 
-model = load_model('./logs/cnn_lstm/final_cnn.h5')
+model = load_model('./logs/cnn_lstm/final_cnn_lstm.h5')
 
 X_train, X_test, y_train, y_test = train_test_split(X_train, y_train, test_size=0.2, random_state=42)
 
