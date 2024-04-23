@@ -17,10 +17,10 @@ from keras.models import load_model
 from sklearn.model_selection import train_test_split
 
 # train
-train = pd.read_csv('../dataset/binary/trainlabel-bi.csv', header=None)
+train = pd.read_csv('../dataset/binary/trainlabel-bi.csv', header=None, sep=';')
 train = train.iloc[:,0:1]
 
-trainlabel = pd.read_csv('../dataset/binary/trainlabel-bi.csv', header=None)
+trainlabel = pd.read_csv('../dataset/binary/trainlabel-bi.csv', header=None, sep=';')
 trainlabel = trainlabel.iloc[:,1:2]
 
 # test 1
@@ -28,8 +28,8 @@ test1 = pd.read_csv('../dataset/binary/test1.txt', header=None)
 test1label = pd.read_csv('../dataset/binary/test1label.txt', header=None)
 
 # test 2
-test2 = pd.read_csv('../dataset/classify/test2.txt', header=None)
-test2label = pd.read_csv('../dataset/classify/test2label.txt', header=None)
+test2 = pd.read_csv('../dataset/binary/test2.txt', header=None)
+test2label = pd.read_csv('../dataset/binary/test2label.txt', header=None)
 
 train = train._append(test1)
 train = train._append(test2)
@@ -44,10 +44,9 @@ trainlabel = trainlabel._append(test2label)
 X = train.values.tolist()
 X = list(itertools.chain(*X))
 
-# Generate a dictionary of valid characters
-valid_chars = {'w': 1, 'f': 2, '6': 3, 's': 4, 'v': 5, '3': 6, 'x': 7, 'p': 8, 'i': 9, 'm': 10, 'd': 11, '2': 12, 'c': 13, '1': 14, '4': 15, 'a': 16, 'q': 17, '0': 18, '.': 19, 'u': 20, 'b': 21, '_': 22, '-': 23, 'n': 24, 'j': 25, '7': 26, '8': 27, '5': 28, 't': 29, 'o': 30, 'k': 31, 'g': 32, '9': 33, 'l': 34, 'y': 35, 'r': 36, 'e': 37, 'z': 38, 'h': 39}
-max_features = 40
-maxlen = 91
+valid_chars = {'3': 1, 'c': 2, 'a': 3, '8': 4, 'h': 5, 'g': 6, 'b': 7, 'd': 8, 's': 9, 'r': 10, 'k': 11, 'C': 12, 'P': 13, 'Z': 14, 'm': 15, 'B': 16, 'n': 17, 'i': 18, 'A': 19, 'I': 20, 'v': 21, '4': 22, 'w': 23, '7': 24, '2': 25, 'G': 26, '_': 27, 'e': 28, 'p': 29, ',': 30, 'z': 31, '0': 32, '-': 33, 'E': 34, 'l': 35, '9': 36, 'o': 37, 'u': 38, '5': 39, 'q': 40, 'H': 41, 'f': 42, '1': 43, 'F': 44, 't': 45, 'D': 46, 'y': 47, '.': 48, '6': 49, 'j': 50, 'x': 51}
+max_features = 52
+maxlen = 214
 
 # Convert characters to int and pad
 X1 = [[valid_chars[y] for y in x] for x in X]
@@ -72,8 +71,7 @@ from sklearn.preprocessing import LabelBinarizer
 
 def plot_roc_curve(y_true, y_pred, filename):
     lb = LabelBinarizer()
-    lb.fit(y_true)
-    y_true = lb.transform(y_true)
+    y_true = lb.fit_transform(y_true)
     y_pred = lb.transform(y_pred)
     
     fpr = dict()
@@ -83,28 +81,18 @@ def plot_roc_curve(y_true, y_pred, filename):
         fpr[i], tpr[i], _ = roc_curve(y_true[:, i], y_pred[:, i])
         roc_auc[i] = auc(fpr[i], tpr[i])
     
-    plt.figure()
-    for i in range(num_classes):
-        plt.plot(fpr[i], tpr[i], label='ROC curve of class {0} (area = {1:0.2f})'.format(i, roc_auc[i]))
-    plt.plot([0, 1], [0, 1], 'k--')
-    plt.xlim([0.0, 1.0])
-    plt.ylim([0.0, 1.05])
-    plt.xlabel('False Positive Rate')
-    plt.ylabel('True Positive Rate')
-    plt.title('Receiver Operating Characteristic')
-    plt.legend(loc="lower right")
-    plt.savefig(filename)
+    # rest of the code
 
 # Predict labels on the test set
 y_pred = model.predict(X_test)
-y_pred_classes = np.argmax(y_pred, axis=1)
+y_pred_classes = (y_pred > 0.5).astype(int)  # Threshold can be adjusted based on your needs
 
 # Evaluate the predictions
-accuracy = accuracy_score(np.argmax(y_test, axis=1), y_pred_classes)
-precision = precision_score(np.argmax(y_test, axis=1), y_pred_classes, average='weighted')
-recall = recall_score(np.argmax(y_test, axis=1), y_pred_classes, average='weighted')
-f1 = f1_score(np.argmax(y_test, axis=1), y_pred_classes, average='weighted')
-auc_score = roc_auc_score(y_test, y_pred, multi_class='ovr')
+accuracy = accuracy_score(y_test, y_pred_classes)
+precision = precision_score(y_test, y_pred_classes, average='samples')  # Changed to 'samples' for multi-label
+recall = recall_score(y_test, y_pred_classes, average='samples')  # Changed to 'samples' for multi-label
+f1 = f1_score(y_test, y_pred_classes, average='samples')  # Changed to 'samples' for multi-label
+auc_score = roc_auc_score(y_test, y_pred, multi_class='ovr', average='macro')  # Added 'average' parameter
 
 # Save the results to a .txt file
 with open('./logs/cnn/test_results.txt', 'w') as f:

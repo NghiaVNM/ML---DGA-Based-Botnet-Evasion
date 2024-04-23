@@ -110,7 +110,7 @@ reduce_lr = ReduceLROnPlateau(monitor='val_loss', factor=0.2, patience=3, min_lr
 # Train the model
 history = model.fit(X_train, y_train, 
                     validation_data=(X_test, y_test), 
-                    epochs=10, batch_size=32, 
+                    epochs=5, batch_size=32, 
                     callbacks=[csv_logger, custom_checkpoint, final_checkpoint, early_stopping])
 
 # Plot training accuracy
