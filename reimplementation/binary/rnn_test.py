@@ -62,7 +62,7 @@ filter_length = 3
 embedding_vecor_length = 128
 num_classes = 2
 
-model = load_model('./logs/cnn/final_cnn.h5')
+model = load_model('./logs/rnn/final_rnn.h5')
 
 X_train, X_test, y_train, y_test = train_test_split(X_train, y_train, test_size=0.2, random_state=42)
 
@@ -96,7 +96,7 @@ f1 = f1_score(y_test, y_pred_classes, average='samples')  # Changed to 'samples'
 auc_score = roc_auc_score(y_test, y_pred, multi_class='ovr', average='macro')  # Added 'average' parameter
 
 # Save the results to a .txt file
-with open('./logs/cnn/test_results.txt', 'w') as f:
+with open('./logs/rnn/test_results.txt', 'w') as f:
     f.write(f'Accuracy: {accuracy}\n')
     f.write(f'Precision: {precision}\n')
     f.write(f'Recall: {recall}\n')
@@ -104,4 +104,4 @@ with open('./logs/cnn/test_results.txt', 'w') as f:
     f.write(f'AUC: {auc_score}\n')
 
 # Plot and save the ROC curve
-plot_roc_curve(np.argmax(y_test, axis=1), y_pred_classes[:, 1], './logs/cnn/test_roc_curve.png')
+plot_roc_curve(np.argmax(y_test, axis=1), y_pred_classes[:, 1], './logs/rnn/test_roc_curve.png')
