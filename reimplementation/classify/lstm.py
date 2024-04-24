@@ -115,9 +115,9 @@ model.compile(loss='categorical_crossentropy', optimizer='adam', metrics=['accur
 X_train, X_test, y_train, y_test = train_test_split(X_train, y_train, test_size=0.2, random_state=42)
 
 # Define callbacks for model
-csv_logger = CSVLogger('./logs/lstm/training.log')
-custom_checkpoint = CustomModelCheckpoint('./logs/lstm/checkpoint-{epoch:02d}.h5', monitor='val_loss', mode='min', save_best_only=False)
-final_checkpoint = CustomModelCheckpoint('./logs/lstm/final_lstm.h5', monitor='val_loss', mode='min', save_best_only=True)
+csv_logger = CSVLogger('./logs2/lstm/training.log')
+custom_checkpoint = CustomModelCheckpoint('./logs2/lstm/checkpoint-{epoch:02d}.h5', monitor='val_loss', mode='min', save_best_only=False)
+final_checkpoint = CustomModelCheckpoint('./logs2/lstm/final_lstm.h5', monitor='val_loss', mode='min', save_best_only=True)
 early_stopping = EarlyStopping(monitor='val_loss', patience=5, verbose=1)
 reduce_lr = ReduceLROnPlateau(monitor='val_loss', factor=0.2, patience=3, min_lr=0.001)
 
@@ -135,5 +135,5 @@ plt.title('Training Accuracy')
 plt.xlabel('Epochs')
 plt.ylabel('Accuracy')
 plt.legend()
-plt.savefig('./logs/lstm/training_accuracy.png')
+plt.savefig('./logs2/lstm/training_accuracy.png')
 plt.show()
