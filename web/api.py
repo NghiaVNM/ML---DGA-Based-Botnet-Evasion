@@ -76,7 +76,7 @@ model_cnn_lstm_classify = load_model('./classify/logs/cnn_lstm/final_cnn_lstm.h5
 model_cnn_detect = load_model('./detect/logs/cnn/final_cnn.h5')
 model_rnn_detect = load_model('./detect/logs/rnn/final_rnn.h5')
 model_gru_detect = load_model('./detect/logs/gru/final_gru.h5')
-model_lstm_detect = load_model('./detect/logs/lstm/final_lstm.h5')
+# model_lstm_detect = load_model('./detect/logs/lstm/final_lstm.h5')
 model_cnn_lstm_detect = load_model('./detect/logs/cnn_lstm/final_cnn_lstm.h5')
 
 # Function
@@ -128,6 +128,8 @@ def get_data():
                     'recall': model_score[2],
                     'f1_score': model_score[3],
                     'roc_auc': model_score[4]
+                }
+            }
             models_info.append(model_info)
         response.append({"models": models_info, "type": model_type})
 
@@ -149,7 +151,7 @@ def post_data():
             'cnn': model_cnn_detect,
             'rnn': model_rnn_detect,
             'gru': model_gru_detect,
-            'lstm': model_lstm_detect,
+            # 'lstm': model_lstm_detect,
             'cnn_lstm': model_cnn_lstm_detect
         }
     }
