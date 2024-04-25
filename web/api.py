@@ -27,7 +27,7 @@ def convert_domain_detect(domain):
 # Get name of class
 def get_name_classify(index):
     names = [
-        'lành tính',
+        'benign',
         'banjori',
         'corebot',
         'dircrypt',
@@ -57,7 +57,7 @@ def get_name_classify(index):
 
 def get_name_detect(index):
     names = [
-        'lành tính',
+        'benign',
         'malicious',
     ]
 
@@ -95,7 +95,7 @@ def predict_url(domain, model, type):
 cnn_detect = [0.9855432211548814, 0.9855432211548814, 0.9855432211548814, 0.9855432211548814, 0.9962256383384895]
 rnn_detect = [0.983962203213096, 0.983962203213096, 0.983962203213096, 0.983962203213096, 0.9944746119352343]
 gru_detect = [0.9881608208989656, 0.9881608208989656, 0.9881608208989656, 0.9881608208989656, 0.9975700090908166]
-lstm_detect = [0, 0, 0, 0, 0]
+lstm_detect = [0.9894588550846337, 0.9894842313453724, 0.9895096076061112, 0.989492690098952, 0.9979937858462894]
 cnn_lstm_detect = [0.9892973697890233, 0.9892973697890233, 0.9892973697890233, 0.9892973697890233, 0.9980537147355995]
 
 cnn_classify = [0.8949121855728845, 0.9005184649198067, 0.8949121855728845, 0.8921945143159461, 0.9941649909639073]
@@ -151,7 +151,7 @@ def post_data():
             'cnn': model_cnn_detect,
             'rnn': model_rnn_detect,
             'gru': model_gru_detect,
-            # 'lstm': model_lstm_detect,
+            'lstm': model_lstm_detect,
             'cnn_lstm': model_cnn_lstm_detect
         }
     }
@@ -162,4 +162,4 @@ def post_data():
         return jsonify({'result': result}), 200
     return jsonify({'error': 'Invalid request'}), 400
 
-app.run(debug=True, port=5001)
+app.run(debug=True, port=5000)
