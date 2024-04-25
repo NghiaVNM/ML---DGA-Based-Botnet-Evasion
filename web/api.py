@@ -76,7 +76,7 @@ model_cnn_lstm_classify = load_model('./classify/logs/cnn_lstm/final_cnn_lstm.h5
 model_cnn_detect = load_model('./detect/logs/cnn/final_cnn.h5')
 model_rnn_detect = load_model('./detect/logs/rnn/final_rnn.h5')
 model_gru_detect = load_model('./detect/logs/gru/final_gru.h5')
-# model_lstm_detect = load_model('./detect/logs/lstm/final_lstm.h5')
+model_lstm_detect = load_model('./detect/logs/lstm/final_lstm.h5')
 model_cnn_lstm_detect = load_model('./detect/logs/cnn_lstm/final_cnn_lstm.h5')
 
 # Function
