@@ -139,6 +139,14 @@ def get_data():
 @app.route('/api/check', methods=['POST'])
 def post_data():
     data = request.get_json()
+
+    # Check if all required fields are present
+    required_fields = ['type', 'model', 'domain']
+    missing_fields = [field for field in required_fields if not data.get(field)]
+    if missing_fields:
+        response = jsonify({'error': f"Missing fields: {', '.join(missing_fields)}", 'status': 'error'})
+        return response, 400
+
     model_functions = {
         'classify': {
             'cnn': model_cnn_classify,
@@ -155,11 +163,26 @@ def post_data():
             'cnn_lstm': model_cnn_lstm_detect
         }
     }
+
+    # Check if type is valid
+    if data['type'] not in model_functions:
+        response = jsonify({'error': 'Invalid type', 'status': 'error'})
+        return response, 400
+
+    # Check if model is valid
+    if data['model'] not in model_functions[data['type']]:
+        response = jsonify({'error': 'Invalid model', 'status': 'error'})
+        return response, 400
+
     model = model_functions.get(data.get('type'), {}).get(data.get('model'))
+
     if model:
         result = predict_url(data.get('domain'), model, data.get('type'))
-        result = get_name_classify(result[0]) if data['type'] == 'classify' else get_name_detect(result[0])
-        return jsonify({'result': result}), 200
-    return jsonify({'error': 'Invalid request'}), 400
+        result_name = get_name_classify(result[0]) if data['type'] == 'classify' else get_name_detect(result[0])
+        response = jsonify({'result': result_name, 'status': 'success'})
+        return response, 200
+
+    response = jsonify({'error': 'Invalid request', 'status': 'error'})
+    return response, 400
 
 app.run(debug=True, port=5000)
