@@ -1,0 +1,8 @@
+accuracy
+0.733
+racall
+0.716
+precision
+0.999
+f1score
+0.834
